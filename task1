@@ -1,0 +1,130 @@
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
+
+public class OnlineReservationSystem {
+    private static Map<String, String> users = new HashMap<>();
+    private static Map<String, Reservation> reservations = new HashMap<>();
+    private static int reservationCounter = 1000;
+
+    public static void main(String[] args) {
+        initializeUsers();
+
+        Scanner scanner = new Scanner(System.in);
+
+        // Login
+        System.out.println("--- Login ---");
+        System.out.print("Enter your username: ");
+        String username = scanner.nextLine();
+        System.out.print("Enter your password: ");
+        String password = scanner.nextLine();
+
+        if (authenticateUser(username, password)) {
+            System.out.println("Login successful. Welcome, " + username + "!");
+        } else {
+            System.out.println("Invalid username or password. Exiting the system.");
+            System.exit(0);
+        }
+
+        while (true) {
+            System.out.println("\n1. Make Reservation");
+            System.out.println("2. Cancel Reservation");
+            System.out.println("3. Exit");
+            System.out.print("Enter your choice: ");
+
+            int choice = scanner.nextInt();
+
+            switch (choice) {
+                case 1:
+                    makeReservation();
+                    break;
+                case 2:
+                    cancelReservation();
+                    break;
+                case 3:
+                    System.out.println("Exiting the system. Goodbye, " + username + "!");
+                    System.exit(0);
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+            }
+        }
+    }
+
+    private static void initializeUsers() {
+        // Add some users for demonstration (in a real system, you would have a proper user management system)
+        users.put("user1", "password1");
+        users.put("user2", "password2");
+    }
+
+    private static boolean authenticateUser(String username, String password) {
+        return users.containsKey(username) && users.get(username).equals(password);
+    }
+
+    private static void makeReservation() {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("\n--- Make Reservation ---");
+
+        System.out.print("Enter your name: ");
+        String name = scanner.nextLine();
+
+        System.out.print("Enter your destination: ");
+        String destination = scanner.nextLine();
+
+        String pnr = generatePNR();
+        Reservation reservation = new Reservation(pnr, name, destination);
+        reservations.put(pnr, reservation);
+
+        System.out.println("Reservation successful!");
+        System.out.println("Your PNR number is: " + pnr);
+    }
+
+    private static void cancelReservation() {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("\n--- Cancel Reservation ---");
+
+        System.out.print("Enter your PNR number: ");
+        String pnr = scanner.nextLine();
+
+        if (reservations.containsKey(pnr)) {
+            Reservation reservation = reservations.get(pnr);
+            System.out.println("Reservation details:");
+            System.out.println(reservation);
+
+            System.out.print("Do you want to cancel this reservation? (yes/no): ");
+            String confirmation = scanner.nextLine();
+
+            if (confirmation.equalsIgnoreCase("yes")) {
+                reservations.remove(pnr);
+                System.out.println("Reservation canceled successfully.");
+            } else {
+                System.out.println("Reservation not canceled.");
+            }
+        } else {
+            System.out.println("Invalid PNR number. No reservation found.");
+        }
+    }
+
+    private static String generatePNR() {
+        return "PNR" + reservationCounter++;
+    }
+}
+
+class Reservation {
+    private String pnr;
+    private String name;
+    private String destination;
+
+    public Reservation(String pnr, String name, String destination) {
+        this.pnr = pnr;
+        this.name = name;
+        this.destination = destination;
+    }
+
+    @Override
+    public String toString() {
+        return "PNR: " + pnr + "\nName: " + name + "\nDestination: " + destination;
+    }
+}
